@@ -1,5 +1,5 @@
 // src/LeadCaptureForm.jsx
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
     X, CheckCircle2, MessageCircle, Phone, Send, Loader2, Sparkles,
 } from 'lucide-react';
@@ -15,11 +15,16 @@ const STORAGE_KEY = 'groq_api_key';
 const AI_MODEL = 'openai/gpt-oss-20b';
 
 const COURSES = [
+    'Agentic AI',
+    'Generative AI',
     'Full Stack Python with AI',
     'Data Science with AI',
     'Data Analyst with AI',
     'Java with AI',
-    'Generative AI',
+    'Soft Skills',
+    'Spoken English',
+    'Internship Program',
+    'Placement Preparation',
 ];
 
 // ─────────────────────────────────────────────────────────────
@@ -192,13 +197,17 @@ const buildSmsUrl = (lead) => {
 const LeadCaptureForm = ({ open, onClose, presetCourse = '', theme = 'dark', inline = false }) => {
     const isDark = theme === 'dark';
 
+    const courseOptions = useMemo(() => {
+        if (presetCourse && !COURSES.includes(presetCourse)) {
+            return [presetCourse, ...COURSES];
+        }
+        return COURSES;
+    }, [presetCourse]);
+
     const [form, setForm] = useState({
-        name: '',
-        email: '',
-        phone: '',
+        name: '', email: '', phone: '',
         course: presetCourse || COURSES[0],
-        experience: 'Beginner',
-        message: '',
+        experience: 'Beginner', message: '',
     });
     const [errors, setErrors] = useState({});
     const [submitting, setSubmitting] = useState(false);
@@ -222,7 +231,6 @@ const LeadCaptureForm = ({ open, onClose, presetCourse = '', theme = 'dark', inl
         return () => clearTimeout(t);
     }, [open, presetCourse]);
 
-    // Lock body scroll ONLY if it's a popup (not inline)
     useEffect(() => {
         if (!open || inline) return undefined;
         const prev = document.body.style.overflow;
@@ -308,13 +316,14 @@ const LeadCaptureForm = ({ open, onClose, presetCourse = '', theme = 'dark', inl
         window.location.href = buildSmsUrl(submittedLead);
     };
 
-    // Reset function to clear the form after inline submission so the user can submit again
     const resetForm = () => {
         setSubmittedLead(null);
         setWelcomeMessage('');
         setSentToWhatsApp(false);
         setForm({
-            name: '', email: '', phone: '', course: presetCourse || COURSES[0], experience: 'Beginner', message: ''
+            name: '', email: '', phone: '',
+            course: presetCourse || COURSES[0],
+            experience: 'Beginner', message: '',
         });
         if (inline && scrollRef.current) {
             scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
@@ -322,32 +331,28 @@ const LeadCaptureForm = ({ open, onClose, presetCourse = '', theme = 'dark', inl
     };
 
     const t = {
-        surface: isDark ? 'bg-black text-white' : 'bg-white text-black',
-        border: isDark ? 'border-white/15' : 'border-black/15',
+        surface: isDark ? 'bg-[#0B0E14] text-white' : 'bg-white text-[#0B0E14]',
+        border: isDark ? 'border-white/10' : 'border-stone-200',
         input: isDark
-            ? 'border-white/25 bg-black/60 text-white placeholder-white/40 focus:border-white'
-            : 'border-black/25 bg-white text-black placeholder-black/40 focus:border-black',
-        label: isDark ? 'text-white/80' : 'text-black/70',
-        subtle: isDark ? 'text-white/60' : 'text-black/55',
-        primary: isDark
-            ? 'bg-white text-black hover:bg-white/85 disabled:bg-white/40'
-            : 'bg-black text-white hover:bg-black/85 disabled:bg-black/40',
+            ? 'border-white/10 bg-[#07090E] text-white placeholder-white/30 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]'
+            : 'border-stone-300 bg-[#FAF8F5] text-[#0B0E14] placeholder-[#0B0E14]/40 focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]',
+        label: isDark ? 'text-white/70' : 'text-[#0B0E14]/70',
+        subtle: isDark ? 'text-white/50' : 'text-[#52525B]',
+        primary: "bg-gradient-to-r from-[#F9D976] via-[#D4AF37] to-[#B88A44] text-[#0B0E14] hover:opacity-90 disabled:opacity-50",
         secondary: isDark
-            ? 'border border-white/30 text-white hover:bg-white/10'
-            : 'border border-black/30 text-black hover:bg-black/10',
+            ? 'border border-[#D4AF37]/30 text-[#D4AF37] hover:bg-[#D4AF37]/10'
+            : 'border border-[#D4AF37]/50 text-[#B88A44] hover:bg-[#D4AF37]/10',
         error: isDark ? 'text-red-400' : 'text-red-600',
         aiBox: isDark
-            ? 'bg-emerald-500/10 border-emerald-500/30'
-            : 'bg-emerald-50 border-emerald-200',
+            ? 'bg-[#D4AF37]/10 border-[#D4AF37]/30 text-[#F9D976]'
+            : 'bg-[#D4AF37]/5 border-[#D4AF37]/20 text-[#B88A44]',
     };
 
     if (!open) return null;
 
-    // ---- Conditional Rendering for Inline vs Popup ----
-    
     const containerClass = inline
         ? `relative w-full overflow-hidden rounded-3xl border shadow-2xl ${t.border} ${t.surface}`
-        : `fixed inset-0 z-[200] flex items-center justify-center p-3 md:p-6 ${isDark ? 'bg-black/85' : 'bg-black/40'}`;
+        : `fixed inset-0 z-[200] flex items-center justify-center p-3 md:p-6 ${isDark ? 'bg-black/80' : 'bg-black/40'}`;
 
     const innerClass = inline
         ? `relative flex flex-col w-full`
@@ -363,11 +368,10 @@ const LeadCaptureForm = ({ open, onClose, presetCourse = '', theme = 'dark', inl
                 className={innerClass}
                 onClick={(e) => e.stopPropagation()}
             >
-                {/* Close Button (Hidden if inline) */}
                 {!inline && (
                     <button
                         onClick={() => { abortRef.current?.abort(); onClose?.(); }}
-                        className={`absolute right-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-full border backdrop-blur-md ${t.border} ${isDark ? 'bg-black/60 hover:bg-white/10' : 'bg-white/80 hover:bg-black/10'}`}
+                        className={`absolute right-3 top-3 z-20 flex h-9 w-9 items-center justify-center rounded-full border backdrop-blur-md ${t.border} ${isDark ? 'bg-[#0B0E14]/60 hover:bg-[#D4AF37]/20' : 'bg-white/80 hover:bg-stone-100'}`}
                         aria-label="Close"
                     >
                         <X size={16} />
@@ -377,14 +381,11 @@ const LeadCaptureForm = ({ open, onClose, presetCourse = '', theme = 'dark', inl
                 <div
                     ref={scrollRef}
                     className={`hide-scrollbar ${inline ? '' : HIDE_SCROLLBAR_CLASS} ${inline ? 'p-6 md:p-8' : 'px-6 md:px-8'}`}
-                    style={{
-                        WebkitOverflowScrolling: 'touch',
-                        scrollBehavior: 'smooth',
-                    }}
+                    style={{ WebkitOverflowScrolling: 'touch', scrollBehavior: 'smooth' }}
                 >
                     {!submittedLead || (!welcomeMessage && submitting) ? (
                         <form onSubmit={submit} className={inline ? "pb-2 pt-2" : "pb-8 pt-8"}>
-                            <div className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-emerald-500">
+                            <div className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-[#D4AF37]">
                                 <Sparkles size={14} /> Free enrollment
                             </div>
                             <h2 className="mb-1 font-serif text-2xl md:text-3xl">Join ProNexa</h2>
@@ -400,7 +401,7 @@ const LeadCaptureForm = ({ open, onClose, presetCourse = '', theme = 'dark', inl
                                         name="name"
                                         value={form.name}
                                         onChange={onChange}
-                                        className={`w-full rounded-xl border px-3.5 py-3 text-sm outline-none ${t.input}`}
+                                        className={`w-full rounded-xl border px-3.5 py-3 text-sm outline-none transition-all ${t.input}`}
                                         placeholder="e.g. Aarav Sharma"
                                         autoComplete="name"
                                         disabled={submitting}
@@ -411,7 +412,7 @@ const LeadCaptureForm = ({ open, onClose, presetCourse = '', theme = 'dark', inl
                                 <div>
                                     <label className={`mb-1 block text-xs font-bold uppercase tracking-wider ${t.label}`}>Email</label>
                                     <input name="email" type="email" value={form.email} onChange={onChange}
-                                        className={`w-full rounded-xl border px-3.5 py-3 text-sm outline-none ${t.input}`}
+                                        className={`w-full rounded-xl border px-3.5 py-3 text-sm outline-none transition-all ${t.input}`}
                                         placeholder="you@example.com" autoComplete="email" disabled={submitting} />
                                     {errors.email && <div className={`mt-1 text-xs ${t.error}`}>{errors.email}</div>}
                                 </div>
@@ -419,7 +420,7 @@ const LeadCaptureForm = ({ open, onClose, presetCourse = '', theme = 'dark', inl
                                 <div>
                                     <label className={`mb-1 block text-xs font-bold uppercase tracking-wider ${t.label}`}>Phone / WhatsApp</label>
                                     <input name="phone" type="tel" value={form.phone} onChange={onChange}
-                                        className={`w-full rounded-xl border px-3.5 py-3 text-sm outline-none ${t.input}`}
+                                        className={`w-full rounded-xl border px-3.5 py-3 text-sm outline-none transition-all ${t.input}`}
                                         placeholder="+91 98765 43210" autoComplete="tel" disabled={submitting} />
                                     {errors.phone && <div className={`mt-1 text-xs ${t.error}`}>{errors.phone}</div>}
                                 </div>
@@ -427,8 +428,8 @@ const LeadCaptureForm = ({ open, onClose, presetCourse = '', theme = 'dark', inl
                                 <div>
                                     <label className={`mb-1 block text-xs font-bold uppercase tracking-wider ${t.label}`}>Course</label>
                                     <select name="course" value={form.course} onChange={onChange}
-                                        className={`w-full rounded-xl border px-3.5 py-3 text-sm outline-none ${t.input}`} disabled={submitting}>
-                                        {COURSES.map((c) => <option key={c} value={c}>{c}</option>)}
+                                        className={`w-full rounded-xl border px-3.5 py-3 text-sm outline-none transition-all ${t.input}`} disabled={submitting}>
+                                        {courseOptions.map((c) => <option key={c} value={c}>{c}</option>)}
                                     </select>
                                     {errors.course && <div className={`mt-1 text-xs ${t.error}`}>{errors.course}</div>}
                                 </div>
@@ -436,7 +437,7 @@ const LeadCaptureForm = ({ open, onClose, presetCourse = '', theme = 'dark', inl
                                 <div>
                                     <label className={`mb-1 block text-xs font-bold uppercase tracking-wider ${t.label}`}>Experience</label>
                                     <select name="experience" value={form.experience} onChange={onChange}
-                                        className={`w-full rounded-xl border px-3.5 py-3 text-sm outline-none ${t.input}`} disabled={submitting}>
+                                        className={`w-full rounded-xl border px-3.5 py-3 text-sm outline-none transition-all ${t.input}`} disabled={submitting}>
                                         <option>Beginner</option>
                                         <option>Intermediate</option>
                                         <option>Advanced</option>
@@ -446,13 +447,13 @@ const LeadCaptureForm = ({ open, onClose, presetCourse = '', theme = 'dark', inl
                                 <div className="md:col-span-2">
                                     <label className={`mb-1 block text-xs font-bold uppercase tracking-wider ${t.label}`}>Message (optional)</label>
                                     <textarea name="message" value={form.message} onChange={onChange} rows={3}
-                                        className={`w-full resize-none rounded-xl border px-3.5 py-3 text-sm outline-none ${t.input}`}
+                                        className={`w-full resize-none rounded-xl border px-3.5 py-3 text-sm outline-none transition-all ${t.input}`}
                                         placeholder="What do you want to build or learn?" disabled={submitting} />
                                 </div>
                             </div>
 
                             <button type="submit" disabled={submitting}
-                                className={`mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition ${t.primary}`}>
+                                className={`mt-6 flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-bold transition-all ${t.primary}`}>
                                 {submitting
                                     ? <><Loader2 size={16} className="animate-spin" /> Preparing your welcome…</>
                                     : <><Send size={16} /> Submit & continue on WhatsApp</>}
@@ -465,7 +466,7 @@ const LeadCaptureForm = ({ open, onClose, presetCourse = '', theme = 'dark', inl
                     ) : (
                         <div className={inline ? "pb-2 pt-2" : "pb-8 pt-8"}>
                             <div className="mb-4 flex items-center gap-3">
-                                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-emerald-500 text-white">
+                                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-br from-[#F9D976] to-[#B88A44] text-[#0B0E14] shadow-lg">
                                     <CheckCircle2 size={22} />
                                 </div>
                                 <div>
@@ -478,7 +479,7 @@ const LeadCaptureForm = ({ open, onClose, presetCourse = '', theme = 'dark', inl
                                 </div>
                             </div>
 
-                            <div className={`mb-4 rounded-xl border p-3 text-xs ${t.border} ${t.subtle}`}>
+                            <div className={`mb-4 rounded-xl border p-3 text-xs ${t.aiBox}`}>
                                 📤 This will send your details to the ProNexa team.
                             </div>
 

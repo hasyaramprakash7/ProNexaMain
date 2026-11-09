@@ -45,7 +45,7 @@ const StickySection = ({ videoSrc, heading, text, buttonText, index, theme, onOp
     return (
         <div
             ref={containerRef}
-            className={`sticky top-0 h-[100dvh] w-full overflow-hidden border-t ${isDark ? 'border-white/10' : 'border-stone-300'}`}
+            className={`sticky top-0 h-[100dvh] w-full overflow-hidden border-t ${isDark ? 'border-[#D4AF37]/20' : 'border-stone-300'}`}
             style={{ zIndex: index + 1, transform: 'translate3d(0,0,0)' }}
         >
             <div className="absolute inset-0 w-full h-full">
@@ -61,8 +61,8 @@ const StickySection = ({ videoSrc, heading, text, buttonText, index, theme, onOp
                 />
 
                 {/* UNIFIED DARK OVERLAY - Ensures perfect text readability on all 3 videos */}
-                <div className="absolute inset-0 bg-black/40" />
-                <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-transparent to-black/60" />
+                <div className="absolute inset-0 bg-[#07090E]/60" />
+                <div className="absolute inset-0 bg-gradient-to-b from-[#07090E]/90 via-transparent to-[#07090E]/80" />
             </div>
 
             <motion.div
@@ -78,7 +78,7 @@ const StickySection = ({ videoSrc, heading, text, buttonText, index, theme, onOp
                     {heading}
                 </h2>
                 <p
-                    className="text-lg md:text-2xl font-light tracking-wide mb-10 max-w-2xl leading-relaxed text-white/95"
+                    className="text-lg md:text-2xl font-light tracking-wide mb-10 max-w-2xl leading-relaxed text-white/90"
                     style={{
                         textShadow: '0 1px 6px rgba(0,0,0,0.95), 0 4px 16px rgba(0,0,0,0.8)'
                     }}
@@ -90,7 +90,7 @@ const StickySection = ({ videoSrc, heading, text, buttonText, index, theme, onOp
                 <div className="flex flex-col sm:flex-row gap-4 items-center justify-center">
                     <button
                         onClick={() => onOpenForm(heading)}
-                        className="group flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-transform hover:scale-105 active:scale-95 shadow-xl bg-white text-black hover:bg-stone-200"
+                        className="group flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-transform hover:scale-105 active:scale-95 shadow-xl bg-gradient-to-r from-[#F9D976] via-[#D4AF37] to-[#B88A44] text-[#0B0E14]"
                     >
                         <span className="tracking-wide uppercase text-sm">{buttonText}</span>
                         <ChevronRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -99,9 +99,9 @@ const StickySection = ({ videoSrc, heading, text, buttonText, index, theme, onOp
                     {/* DIRECT LINK TO PROJECTS SHOP */}
                     {/* <a
                         href={PROJECTS_URL}
-                        className="group flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-transform hover:scale-105 active:scale-95 shadow-xl bg-black/60 text-white backdrop-blur-md border border-white/30 hover:bg-black/80"
+                        className="group flex items-center gap-3 px-8 py-4 rounded-full font-bold transition-transform hover:scale-105 active:scale-95 shadow-xl bg-black/60 text-white backdrop-blur-md border border-[#D4AF37]/30 hover:bg-[#0B0E14]/80"
                     >
-                        <ShoppingBag className="w-5 h-5" />
+                        <ShoppingBag className="w-5 h-5 text-[#D4AF37]" />
                         <span className="tracking-wide uppercase text-sm">Buy Projects</span>
                     </a> */}
                 </div>
@@ -143,7 +143,7 @@ const HeroParallax = ({ theme }) => {
     return (
         <>
             <section
-                className="relative w-full bg-black block min-h-screen"
+                className="relative w-full bg-[#07090E] block min-h-screen"
                 id="projects"
                 style={{ isolation: 'isolate' }}
             >
